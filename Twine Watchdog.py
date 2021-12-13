@@ -6,32 +6,35 @@ from watchdog.events import PatternMatchingEventHandler
 import webbrowser
 import os
 
-
 script_source = ""
+pwd = os.getcwd()
 
-def Get_Script_Files():
-    files = os.listdir(os.getcwd())
+def Get_Script_Files(mode):
+    global script_source 
+    files = os.listdir(f"{pwd}/{mode}")
     js_script_pefix = f"<script id='my_script' type='text/javascript' src='{pwd}/{mode}/"
-    cs_script_pefix = f"<script id='my_script' type='text/javascript' src='{pwd}/{mode}/"
+    cs_script_pefix = f"<script id='stylesheet' type='text/javascript' src='{pwd}/{mode}/"
     script_sufix = "'></script>\n"
     for i in files:
-        if ".js" in i:
+        if ".js" in i or ".mjs" in i:
             script_source += js_script_pefix + i + script_source
+            print(i)
         if ".css" in i:
             script_source += cs_script_pefix + i + script_source
+            print(i)
 
 def Read_Execution_Mode():
-    print("Type 'normal' for normal mode.\nType publish.\nType 'q' to exit the program.")
+    print("Type 'edit' for edit mode.\nType publish publish mode.\nType 'q' to exit the program.")
     mode = input()
     while True:
-        Get_Script_Files()
-        if(mode == "publish"):
-            return "publish"
+        Get_Script_Files(mode)
         if(mode.lower() == "edit"):
             return "edit"
+        if(mode == "publish"):
+            return "publish"
         if(mode == "q"):
             exit()
-        print("Type 'test' for test mode.\nType 'normal' for normal mode.\nType 'q' to exit the program.")
+        print("Type 'publish' for publish mode.\nType 'edit' for edit mode.\nType 'q' to exit the program.")
         mode = input()
 
 """
@@ -56,7 +59,7 @@ def Insert_script(path):
 """
 def Make_file_copy(path):
     original_path = path
-    target_path = f"{os.getcwd()}/1.html"
+    target_path = f"{pwd}/1.html"
     os.popen(f'cp {original_path} {target_path}')
     path = target_path
     Insert_script(path)
@@ -88,7 +91,7 @@ def main(mode):
     if(mode == "edit"):
         path = "/tmp/"
     else:
-        path = os.getcwd()
+        path = pwd
     go_recursively = True
     my_observer = Observer()
     my_observer.schedule(my_event_handler, path, recursive=go_recursively)
