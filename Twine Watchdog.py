@@ -6,27 +6,36 @@ from watchdog.events import PatternMatchingEventHandler
 import webbrowser
 import os
 
+script_source = ""
+pwd = os.getcwd()
+
+def Get_Script_Files(mode):
+    global script_source 
+    files = os.listdir(f"{pwd}/{mode}")
+    js_script_pefix = f"<script id='my_script' type='text/javascript' src='{pwd}/{mode}/"
+    cs_script_pefix = f"<script id='stylesheet' type='text/javascript' src='{pwd}/{mode}/"
+    script_sufix = "'></script>\n"
+    for i in files:
+        if ".js" in i or ".mjs" in i:
+            script_source += js_script_pefix + i + script_source
+            print(i)
+        if ".css" in i:
+            script_source += cs_script_pefix + i + script_source
+            print(i)
 
 def Read_Execution_Mode():
-    print("Type 'test' for test mode.\nType 'normal' for normal mode.\nType publish.\nType 'q' to exit the program.")
+    print("Type 'edit' for edit mode.\nType publish publish mode.\nType 'q' to exit the program.")
     mode = input()
-    script_pefix = "<script id='my_script' type='text/javascript' src='"
-    script_sufix = "'></script>\n"
     while True:
+        Get_Script_Files(mode)
+        if(mode.lower() == "edit"):
+            return "edit"
         if(mode == "publish"):
-            script_source = script_pefix+"*** Put here the path to the script, for publishing mode"+script_sufix
-            return "pub"
-        if(mode == "test"):
-            script_source = script_pefix+"*** Put here the path to the script, testing mode"+script_sufix
-            return "tmp"
-        if(mode == "normal"):
-            script_source = script_pefix+"*** Put Here your path to the script, for normal mode"+script_sufix
-            return "tmp"
+            return "publish"
         if(mode == "q"):
             exit()
-        print("Type 'test' for test mode.\nType 'normal' for normal mode.\nType 'q' to exit the program.")
+        print("Type 'publish' for publish mode.\nType 'edit' for edit mode.\nType 'q' to exit the program.")
         mode = input()
-
 
 """
     This function takes the path to the file and injects a string, at a certain line, in the file.
@@ -36,7 +45,6 @@ def Read_Execution_Mode():
 def Insert_script(path):
     index = 6
     value = script_source
-    value += "<link rel='stylesheet' href='*** Put here the source of the script you want to be added'>\n"
     print(path)
     with open(path, "r") as f:
             cuvinte = f.readlines(-1)
@@ -51,10 +59,9 @@ def Insert_script(path):
 """
 def Make_file_copy(path):
     original_path = path
-    target_path = "Put here your path to the place you want to save the file"
+    target_path = f"{pwd}/1.html"
     os.popen(f'cp {original_path} {target_path}')
     path = target_path
-    #return path
     Insert_script(path)
     webbrowser.open('file://' + path)
 
@@ -68,16 +75,12 @@ def on_created(event):
     if os.path.isfile(path):
         if path.endswith("html"):
             print(f"hey, {path} has been created! ")
-            #path = Make_file_copy(path)
-            #Insert_script(path)
-            #webbrowser.open('file://' + path)
             Make_file_copy(path)
 
 """
     This is the main function.
     Here is 
 """
-script_source = ""  
 def main(mode):
     patterns = ["*"]
     ignore_patterns = None
@@ -85,10 +88,10 @@ def main(mode):
     case_sensitive = True
     my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
     my_event_handler.on_created = on_created
-    if(mode == "tmp"):
+    if(mode == "edit"):
         path = "/tmp/"
     else:
-        path = "Put here the path for the folder where you want to get you "
+        path = pwd
     go_recursively = True
     my_observer = Observer()
     my_observer.schedule(my_event_handler, path, recursive=go_recursively)
