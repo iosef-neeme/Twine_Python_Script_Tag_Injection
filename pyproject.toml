@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "twine watchdog"
-version = "0.1.0"
+version = "0.2.0"
 description = "This is a tool to inject the script tags into the html files created by Twine IDE"
 authors = ["Yusef Neeme"]
 

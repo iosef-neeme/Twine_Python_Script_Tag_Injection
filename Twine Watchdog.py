@@ -1,19 +1,40 @@
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import webbrowser
 import os
+import json
 
 script_source = ""
-pwd = os.getcwd()
+project_directory = ""
+mode = ""
 
-def Get_Script_Files(mode):
-    global script_source 
-    files = os.listdir(f"{pwd}/{mode}")
-    js_script_pefix = f"<script id='my_script' type='text/javascript' src='{pwd}/{mode}/"
-    cs_script_pefix = f"<script id='stylesheet' type='text/javascript' src='{pwd}/{mode}/"
+def Get_Script_Files():
+    global script_source
+    global project_directory
+    global mode
+    while True: 
+        try:
+            files = os.listdir(f"{project_directory}/{mode}")
+            break
+        except:
+            print(f"Could not find the directory {mode} specified in the json file.\
+                    \n Would you like me to create the directories according to the default configuration?")
+            answer = input()
+            if(answer == "yes"):
+                if not os.path.exists(f"{project_directory}/dev"):
+                    os.mkdir(f"{project_directory}/dev")
+                if not os.path.exists(f"{project_directory}/tmp"):
+                    os.mkdir(f"{project_directory}/tmp")
+                if not os.path.exists(f"{project_directory}/pub"):
+                    os.mkdir(f"{project_directory}/pub")
+                continue
+            else:
+                exit(0)
+    js_script_pefix = f"<script id='my_script' type='text/javascript' src='{project_directory}/{mode}/"
+    cs_script_pefix = f"<script id='stylesheet' type='text/javascript' src='{project_directory}/{mode}/"
     script_sufix = "'></script>\n"
     for i in files:
         if ".js" in i or ".mjs" in i:
@@ -24,17 +45,21 @@ def Get_Script_Files(mode):
             print(i)
 
 def Read_Execution_Mode():
-    print("Type 'edit' for edit mode.\nType publish publish mode.\nType 'q' to exit the program.")
+    global project_directory 
+    global mode
+    print("Please indicate the project directory")
+    project_directory = input()
+    print("Type 'dev' for development mode.\nType 'pub' publish mode.\nType 'q' to exit the program.")
     mode = input()
     while True:
-        Get_Script_Files(mode)
-        if(mode.lower() == "edit"):
-            return "edit"
-        if(mode == "publish"):
-            return "publish"
+        Get_Script_Files()
+        if(mode.lower() == "dev"):
+            return 
+        if(mode == "pub"):
+            return 
         if(mode == "q"):
             exit()
-        print("Type 'publish' for publish mode.\nType 'edit' for edit mode.\nType 'q' to exit the program.")
+        print("Type 'dev' for development mode.\nType 'development' for development mode.\nType 'q' to exit the program.")
         mode = input()
 
 """
@@ -59,7 +84,7 @@ def Insert_script(path):
 """
 def Make_file_copy(path):
     original_path = path
-    target_path = f"{pwd}/1.html"
+    target_path = f"{project_directory}{mode}/1.html"
     os.popen(f'cp {original_path} {target_path}')
     path = target_path
     Insert_script(path)
@@ -81,20 +106,22 @@ def on_created(event):
     This is the main function.
     Here is 
 """
-def main(mode):
+def main():
+    global mode
+    Read_Execution_Mode()
     patterns = ["*"]
     ignore_patterns = None
     ignore_directories = False
     case_sensitive = True
     my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
     my_event_handler.on_created = on_created
-    if(mode == "edit"):
+    if(mode == "dev"):
         path = "/tmp/"
     else:
-        path = pwd
+        path = project_directory
     go_recursively = True
     my_observer = Observer()
-    my_observer.schedule(my_event_handler, path, recursive=go_recursively)
+    my_observer.schedule(my_event_handler, path, recursive = go_recursively)
 
     my_observer.start()
     try:
@@ -105,4 +132,4 @@ def main(mode):
         my_observer.join()
 
 if __name__ == "__main__":
-    main(Read_Execution_Mode())
+    main()
