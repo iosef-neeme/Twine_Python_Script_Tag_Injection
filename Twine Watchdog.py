@@ -11,6 +11,11 @@ script_source = ""
 project_directory = ""
 mode = ""
 
+"""
+    This function takes the path to the file and injects a string, at a certain line, in the file.
+    The variable index indicates the line were your string will be injected-1.
+    The variable "value" holds the string that will be injected in the html file.
+"""
 def Get_Script_Files():
     global script_source
     global project_directory
@@ -44,6 +49,9 @@ def Get_Script_Files():
             script_source += cs_script_pefix + i + script_source
             print(i)
 
+"""
+    This function read the execution mode and stores the value in a global variable called mode.
+"""
 def Read_Execution_Mode():
     global project_directory 
     global mode
@@ -104,7 +112,6 @@ def on_created(event):
 
 """
     This is the main function.
-    Here is 
 """
 def main():
     global mode
