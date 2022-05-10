@@ -44,6 +44,7 @@ def Get_Script_Files():
     for i in files:
         if ".js" in i or ".mjs" in i:
             script_source += js_script_pefix + i + script_sufix
+            print(script_source)
         if ".css" in i:
             script_source += cs_script_pefix + i + script_sufix
 
@@ -90,8 +91,9 @@ def Insert_script(path):
 """
 def Make_file_copy(path):
     original_path = path
-    path = f"{project_directory}/{mode}/1.html"
-    os.popen(f'cp {original_path} {path}')
+    target_path = f"{project_directory}/{mode}/1.html"
+    os.popen(f'cp {original_path} {target_path}')
+    path = target_path
     Insert_script(path)
     webbrowser.open('file://' + path)
 
