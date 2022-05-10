@@ -60,9 +60,9 @@ def Read_Execution_Mode():
     while True:
         Get_Script_Files()
         if(mode.lower() == "dev"):
-            return 
+            return "/tmp/"
         if(mode == "pub"):
-            return 
+            return project_directory
         if(mode == "q"):
             exit()
         print("Type 'dev' for development mode.\nType 'development' for development mode.\nType 'q' to exit the program.")
@@ -88,12 +88,11 @@ def Insert_script(path):
 """
     This function create a copy of the file that was created by the Twine IDE.
 """
-def Make_file_copy(path):
-    original_path = path
-    path = f"{project_directory}/{mode}/1.html"
-    os.popen(f'cp {original_path} {path}')
-    Insert_script(path)
-    webbrowser.open('file://' + path)
+def Make_file_copy(original_path):
+    destination_path = f"{project_directory}/tmp/1.html"
+    os.popen(f'cp {original_path} {destination_path}')
+    Insert_script(destination_path)
+    webbrowser.open('file://' + destination_path)
 
 """
     This is the function that will be used as handler for the event on_create which will be triggered when a file is created in the overseen directory aka folder.
@@ -111,18 +110,13 @@ def on_created(event):
     This is the main function.
 """
 def main():
-    global mode
-    Read_Execution_Mode()
+    path = Read_Execution_Mode()
     patterns = ["*"]
     ignore_patterns = None
     ignore_directories = False
     case_sensitive = True
     my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
     my_event_handler.on_created = on_created
-    if(mode == "dev"):
-        path = "/tmp/"
-    else:
-        path = project_directory
     go_recursively = True
     my_observer = Observer()
     my_observer.schedule(my_event_handler, path, recursive = go_recursively)
