@@ -9,17 +9,15 @@ import json
 
 script_source = ""
 project_directory = ""
-mode = ""
 
 """
     This function takes the path to the file and injects a string, at a certain line, in the file.
     The variable index indicates the line were your string will be injected-1.
     The variable "value" holds the string that will be injected in the html file.
 """
-def Get_Script_Files():
+def Get_Script_Files(mode):
     global script_source
     global project_directory
-    global mode
     while True: 
         try:
             files = os.listdir(f"{project_directory}/{mode}")
@@ -52,13 +50,12 @@ def Get_Script_Files():
 """
 def Read_Execution_Mode():
     global project_directory 
-    global mode
     print("Please indicate the project directory")
     project_directory = input()
     print("Type 'dev' for development mode.\nType 'pub' publish mode.\nType 'q' to exit the program.")
     mode = input()
     while True:
-        Get_Script_Files()
+        Get_Script_Files(mode)
         if(mode.lower() == "dev"):
             return "/tmp/"
         if(mode == "pub"):
