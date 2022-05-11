@@ -60,7 +60,7 @@ def Read_Execution_Mode():
     while True:
         Get_Script_Files()
         if(mode.lower() == "dev"):
-            return "tmp"
+            return "/tmp/"
         if(mode == "pub"):
             return project_directory
         if(mode == "q"):
@@ -70,7 +70,7 @@ def Read_Execution_Mode():
 
 """
     This function takes the path to the file and injects a string, at a certain line, in the file.
-    The variable index indicates the line-1 where your string will be injected.
+    The variable index indicates the line were your string will be injected-1.
     The variable "value" holds the string that will be injected in the html file.
 """
 def Insert_script(path):
@@ -89,9 +89,8 @@ def Insert_script(path):
     This function create a copy of the file that was created by the Twine IDE.
 """
 def Make_file_copy(original_path):
-    global project_directory
     destination_path = f"{project_directory}/tmp/1.html"
-    os.popen(f'cp {original_path} {project_directory}/tmp/1.html')
+    os.popen(f'cp {original_path} {destination_path}')
     Insert_script(destination_path)
     webbrowser.open('file://' + destination_path)
 
@@ -111,7 +110,6 @@ def on_created(event):
     This is the main function.
 """
 def main():
-
     path = Read_Execution_Mode()
     patterns = ["*"]
     ignore_patterns = None
