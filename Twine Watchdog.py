@@ -37,7 +37,7 @@ def Get_Script_Files(mode):
             else:
                 exit(0)
     js_script_pefix = f"<script id='my_script' type='text/javascript' src='{project_directory}/{mode}/"
-    cs_script_pefix = f"<script id='stylesheet' type='text/javascript' src='{project_directory}/{mode}/"
+    cs_script_pefix = f"<link rel='stylesheet' href='{project_directory}/{mode}/"
     script_sufix = "'></script>\n"
     for i in files:
         if ".js" in i or ".mjs" in i:
